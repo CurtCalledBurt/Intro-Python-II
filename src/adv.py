@@ -1,4 +1,6 @@
 from room import Room
+from player import Player
+from item import Item
 
 # Declare all the rooms
 
@@ -21,9 +23,9 @@ chamber! Sadly, it has already been completely emptied by
 earlier adventurers. The only exit is to the south."""),
 }
 
+directions = ['n', 's', 'e', 'w']
 
 # Link rooms together
-
 room['outside'].n_to = room['foyer']
 room['foyer'].s_to = room['outside']
 room['foyer'].n_to = room['overlook']
@@ -33,19 +35,54 @@ room['narrow'].w_to = room['foyer']
 room['narrow'].n_to = room['treasure']
 room['treasure'].s_to = room['narrow']
 
-#
-# Main
-#
+def move_to_room(player, direction):
+    bad_direction_message = "\n *Bonk*\n You can't go that way. Try again."
+    if direction ==  'n':
+        try:
+            player.location = player.location.n_to
+        except:
+            print(bad_direction_message)
+    
+    if direction ==  's':
+        try:
+            player.location = player.location.s_to
+        except:
+            print(bad_direction_message)
 
-# Make a new player object that is currently in the 'outside' room.
+    if direction ==  'e':
+        try:
+            player.location = player.location.e_to
+        except:
+            print(bad_direction_message)
+    
+    if direction ==  'w':
+        try:
+            player.location = player.location.w_to
+        except:
+            print(bad_direction_message)
 
-# Write a loop that:
-#
-# * Prints the current room name
-# * Prints the current description (the textwrap module might be useful here).
-# * Waits for user input and decides what to do.
-#
-# If the user enters a cardinal direction, attempt to move to the room there.
-# Print an error message if the movement isn't allowed.
-#
-# If the user enters "q", quit the game.
+
+you = Player(room['outside'])
+
+while True:
+    print(f"\n You are at the {you.location.name} \n {you.location.description}\n")
+
+    cmd = input("Which direction do you go? \n 'n', 's', 'e', 'w' to move to new rooms \n 'i' to investigate current room, \n 'q' to quit the game \n---> ")
+    if cmd == 'q':
+        print('\n This game is over. Good day cowardly adventurer.\n')
+        break
+    
+    elif cmd == 'i':
+        if len(you.location.items) == 0:
+            print("\n You search the room thoroughly. You find nothing.")
+        else:
+            print("\n You search the room thoroughly. You find: ")
+            for item in you.location.items:
+                print(item)
+        
+
+    elif cmd in directions:
+        move_to_room(you, cmd)
+    
+    else:
+        print("\n ... That isn't even a valid input. \n Must all adventurers be this incompetent?")
